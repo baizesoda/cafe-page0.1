@@ -29,13 +29,16 @@ export default function Coda() {
         <div className="flex gap-3">
           <dt className="w-16 shrink-0 text-ink-muted">页码</dt>
           <dd>
-            所有 <span className="tabular-nums">p.xx</span>
+            所有 <span className="data-num">P.xx</span>
             {" 均为该电子版的 PDF 页序（共 310 页），与纸书页码可能有偏移。"}
           </dd>
         </div>
         <div className="flex gap-3">
           <dt className="w-16 shrink-0 text-ink-muted">摘要</dt>
-          <dd>事件摘要是我自己的转述；引文为短引，只用来定位原文。</dd>
+          <dd>
+            {"事件摘要是我自己的转述；引文为短引，只用来定位原文。" +
+              "个别专名改用通行译名（奥尔良、安的列斯群岛），与原书译法不同。"}
+          </dd>
         </div>
         <div className="flex gap-3">
           <dt className="w-16 shrink-0 text-ink-muted">数据</dt>

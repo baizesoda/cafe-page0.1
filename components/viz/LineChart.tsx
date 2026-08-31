@@ -130,9 +130,11 @@ export default function LineChart({ series: s }: { series: Series }) {
           <tbody>
             {s.points.map((p) => (
               <tr key={p.year}>
-                <td className="border-b border-rule py-1 pr-3 tabular-nums">{p.year}</td>
-                <td className="border-b border-rule py-1 pr-3 tabular-nums">
-                  {p.value.toLocaleString("zh-CN")}
+                <td className="border-b border-rule py-1 pr-3">
+                  <span className="data-num">{p.year}</span>
+                </td>
+                <td className="border-b border-rule py-1 pr-3">
+                  <span className="data-num">{p.value.toLocaleString("zh-CN")}</span>
                   {p.derived && " ※"}
                 </td>
                 <td className="border-b border-rule py-1 leading-relaxed">{p.note}</td>

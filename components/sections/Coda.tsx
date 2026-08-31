@@ -50,7 +50,7 @@ export default function Coda() {
       </dl>
 
       <p className="mt-10 text-xs text-ink-muted">
-        本页仅供个人阅读记录，未公开部署。
+        本页仅供个人使用。
       </p>
     </footer>
   );

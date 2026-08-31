@@ -1,4 +1,4 @@
-import { yearText, type Event, type Volume } from "@/lib/types";
+import { splitYear, yearText, type Event, type Volume } from "@/lib/types";
 
 type Props = {
   volume: Volume;
@@ -18,13 +18,19 @@ export default function VolumeIntro({ volume: v, count, asides }: Props) {
       className="flex min-h-[68vh] scroll-mt-16 flex-col justify-center border-t border-rule py-16"
     >
       <div className="reveal">
-        <div className="flex items-baseline gap-3 text-ink-muted">
-          <span className="data-num text-4xl tracking-widest text-accent">{ROMAN[v.n]}</span>
-          <span className="lab-label">VOL.{v.n} · {v.era}</span>
+        {/* 章节起始标记：金褐罗马数字 + 下方 2px/40px 短横线，给开头一个"落锤感" */}
+        <div className="flex items-baseline gap-4">
+          <div>
+            <span className="font-display text-[40px] leading-none text-gold">{ROMAN[v.n]}</span>
+            <span aria-hidden className="chapter-rule mt-2" />
+          </div>
+          <span className="lab-label">
+            <span className="en">VOL.{v.n}</span> · <span className="zh">{v.era}</span>
+          </span>
         </div>
-        <h2 className="mt-3 font-display text-3xl font-medium tracking-wide text-ink sm:text-5xl">{v.title}</h2>
-        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-ink-2">{v.oneLiner}</p>
-        <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-ink-muted">
+        <h2 className="mt-6 font-display text-5xl font-medium text-ink">{v.title}</h2>
+        <p className="mt-4 max-w-2xl text-xl leading-[1.9] text-ink">{v.oneLiner}</p>
+        <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] text-ink-muted">
           <span className="data-num">P.{v.pageRange[0]}–{v.pageRange[1]}</span>
           <span>
             <span className="data-num">{count}</span> 条事件
@@ -34,23 +40,33 @@ export default function VolumeIntro({ volume: v, count, asides }: Props) {
       </div>
 
       {asides.length > 0 && (
-        <div className="reveal mt-10 max-w-2xl">
-          <h3 className="lab-label">ASIDE · 题外话</h3>
-          <div className="mt-3 grid gap-3 sm:grid-cols-2">
+        <div className="reveal mt-8">
+          <h3 className="lab-label">
+            <span className="en">ASIDE</span> · <span className="zh">题外话</span>
+          </h3>
+          {/* 三列铺满内容区（design-spec.md 5.3），gap 24px */}
+          <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {asides.map((a) => (
               <article
                 key={a.id}
                 id={a.id}
-                className="scroll-mt-24 rounded-lg border border-dashed border-rule bg-surface p-4"
+                className="regmarks relative scroll-mt-24 border border-rule bg-surface p-8 shadow-[var(--shadow-card)] transition-[border-color,box-shadow] duration-200 ease-out hover:border-accent hover:shadow-[var(--shadow-card-hover)]"
               >
-                <header className="flex flex-wrap items-baseline gap-x-2 text-[11px] text-ink-muted">
-                  <span className="data-num text-ink-2">{yearText(a)}</span>
-                  <span className="lab-label">CH.{a.chapter} · P.{a.source.page}</span>
+                <header className="flex flex-wrap items-baseline gap-x-2">
+                  <span className="data-num text-base font-medium">
+                    {splitYear(yearText(a))[0]}
+                    {splitYear(yearText(a))[1] && (
+                      <span className="zh ml-1">{splitYear(yearText(a))[1]}</span>
+                    )}
+                  </span>
+                  <span className="lab-label en">CH.{a.chapter} · P.{a.source.page}</span>
                 </header>
-                <h4 className="mt-1 leading-snug font-medium text-ink">{a.title}</h4>
-                <p className="mt-1.5 text-sm leading-relaxed text-ink-2">{a.summary}</p>
+                <h4 className="mt-2 font-display text-[19px] leading-snug font-semibold text-ink">
+                  {a.title}
+                </h4>
+                <p className="mt-2 text-[15px] leading-[1.85] text-ink">{a.summary}</p>
                 {a.quote && (
-                  <blockquote className="mt-2 border-l-2 border-accent-2 pl-2.5 text-xs leading-relaxed text-ink-2">
+                  <blockquote className="mt-5 border-l-2 border-accent pl-4 text-sm leading-[1.85] text-ink-muted">
                     {a.quote}
                   </blockquote>
                 )}

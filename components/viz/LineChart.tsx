@@ -37,7 +37,7 @@ export default function LineChart({ series: s }: { series: Series }) {
         {TICKS.map((t) => (
           <g key={t}>
             <line x1={M.left} x2={W - M.right} y1={y(t)} y2={y(t)} stroke="var(--rule)" strokeWidth={1} strokeDasharray="2 4" />
-            <text x={M.left - 8} y={y(t) + 4} textAnchor="end" fontSize={11} className="data-num" fill="var(--ink-muted)">
+            <text x={M.left - 8} y={y(t) + 4} textAnchor="end" fontSize={11} className="data-num zh" fill="var(--ink-muted)">
               {cn(t)}
             </text>
           </g>
@@ -74,7 +74,7 @@ export default function LineChart({ series: s }: { series: Series }) {
                 y={y(p.value) - 12}
                 textAnchor={last ? "end" : "start"}
                 fontSize={11}
-                className="data-num"
+                className="data-num zh"
                 fill="var(--ink-2)"
               >
                 {cn(p.value)}
@@ -112,7 +112,7 @@ export default function LineChart({ series: s }: { series: Series }) {
               由倍数推算
             </span>
           )}
-          <span className="data-num">LOG SCALE · P.{s.source.page}</span>
+          <span className="data-num en">LOG SCALE · P.{s.source.page}</span>
         </div>
         {s.caveat && <p className="max-w-2xl leading-relaxed">{s.caveat}</p>}
       </figcaption>

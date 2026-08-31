@@ -9,11 +9,13 @@ export default function DataPanel({ series }: { series: Series[] }) {
   if (!series.length) return null;
   return (
     <section className="reveal border-t border-rule py-12">
-      <h3 className="text-xs tracking-widest text-ink-muted">书里为数不多的硬数字</h3>
-      <div className="mt-5 space-y-10">
+      <h3 className="lab-label">
+        <span className="en">DATA</span> · <span className="zh">书里为数不多的硬数字</span>
+      </h3>
+      <div className="mt-6 space-y-8">
         {series.map((s) => (
           <div key={s.id}>
-            <h4 className="mb-3 font-medium text-ink">{s.label}</h4>
+            <h4 className="mb-4 font-display text-[19px] font-semibold text-ink">{s.label}</h4>
             <LineChart series={s} />
           </div>
         ))}

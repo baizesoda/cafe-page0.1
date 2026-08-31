@@ -29,8 +29,9 @@ export default function VolumeRail({
   const active = volumes.find((v) => v.n === activeVolume);
 
   return (
-    <div className="sticky top-0 z-30 border-b border-rule bg-plane/85 backdrop-blur">
-      <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-2 sm:gap-4 xl:max-w-[84rem]">
+    /* 规范禁止 backdrop-filter，这里用不透明纸色 + 1px 下边线压住底下滚过去的内容 */
+    <div className="sticky top-0 z-40 border-b border-rule bg-plane">
+      <div className="mx-auto flex max-w-[1200px] items-center gap-4 px-6 py-2 md:pl-16">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           {volumes.map((v) => {
             const n = counts[v.n] ?? 0;
@@ -45,18 +46,17 @@ export default function VolumeRail({
               >
                 <span
                   className={[
-                    "data-num block text-[10px] tracking-[0.2em] transition-colors",
-                    isActive ? "text-accent" : "text-ink-muted group-hover:text-ink-2",
+                    "block font-mono text-[12px] tracking-[0.12em] transition-colors duration-200",
+                    isActive ? "text-gold" : "text-ink-muted group-hover:text-ink",
                   ].join(" ")}
                 >
                   {ROMAN[v.n]}
                 </span>
+                {/* 已读段落红褐，未读墨蓝 40%；规范禁止发光，所以这里没有 shadow */}
                 <span
                   className={[
-                    "mt-1 block h-[3px] rounded-full transition-all",
-                    isActive
-                      ? "bg-accent shadow-[0_0_8px_var(--accent)]"
-                      : "bg-axis/60 group-hover:bg-axis",
+                    "mt-1 block h-0.5 transition-colors duration-200",
+                    isActive ? "bg-accent" : "bg-axis group-hover:bg-data/60",
                   ].join(" ")}
                 />
               </a>
@@ -64,14 +64,12 @@ export default function VolumeRail({
           })}
         </div>
 
-        <div className="flex shrink-0 items-baseline gap-2 sm:gap-3">
-          <span className="hidden max-w-[13rem] truncate text-xs text-ink-2 sm:inline">
+        <div className="flex shrink-0 items-baseline gap-4">
+          <span className="hidden max-w-[13rem] truncate text-[13px] text-ink-muted sm:inline">
             {active ? `第${active.n}卷 · ${active.title}` : ""}
           </span>
-          <span className="data-num text-base font-medium text-ink sm:text-lg">
-            {yearLabel}
-          </span>
-          <span className="data-num w-10 text-right text-[11px] text-ink-muted">
+          <span className="data-num text-lg font-medium">{yearLabel}</span>
+          <span className="data-num w-10 text-right text-[12px]">
             {String(Math.round((progress / total) * 100)).padStart(2, "0")}%
           </span>
         </div>

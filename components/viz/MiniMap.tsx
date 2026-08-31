@@ -148,10 +148,12 @@ export default function MiniMap({ places, activePlaceId, routeOrder, visited }: 
   const transform = `translate(${map.width / 2 - k * view.cx} ${map.height / 2 - k * view.cy}) scale(${k})`;
 
   const zoomBtn =
-    "flex size-6 items-center justify-center rounded-full border border-rule bg-surface/90 text-xs leading-none text-ink-2 shadow-sm backdrop-blur transition-colors hover:text-ink disabled:opacity-40";
+    "flex size-6 items-center justify-center border border-rule bg-surface text-xs leading-none text-ink-muted transition-colors duration-200 hover:text-accent disabled:opacity-40";
 
   const panel = (
-    <figure className="relative rounded-lg border border-rule bg-surface p-3">
+    /* 三个区块用 1px 细线分隔：地图缩略图 / 图例行 / 操作提示（design-spec.md 5.2） */
+    <figure className="relative rounded-[10px] border border-rule bg-surface shadow-[var(--shadow-card)]">
+      <div className="relative p-2">
       <svg
         ref={svgRef}
         viewBox={`0 0 ${map.width} ${map.height}`}
@@ -234,17 +236,17 @@ export default function MiniMap({ places, activePlaceId, routeOrder, visited }: 
 
           {activeXY && active && (
             <g>
-              {/* 呼吸圈 + 十字准线：一眼找到“现在在哪” */}
+              {/* 当前点：实心圆 + 同心环 + 十字准线。规范禁止发光与缩放动画，
+                  所以这里是静态的同心环，不再有呼吸圈 */}
               <circle
-                className="pulse-ring"
                 cx={activeXY[0]}
                 cy={activeXY[1]}
-                r={(5 * unit) / k}
+                r={(7.5 * unit) / k}
                 fill="none"
                 stroke="var(--accent)"
                 strokeWidth={(1 * unit) / k}
               />
-              <g stroke="var(--accent)" strokeWidth={(0.6 * unit) / k} opacity={0.5}>
+              <g stroke="var(--data)" strokeWidth={(0.6 * unit) / k} opacity={0.5}>
                 <line x1={activeXY[0] - (9 * unit) / k} x2={activeXY[0] - (6 * unit) / k} y1={activeXY[1]} y2={activeXY[1]} />
                 <line x1={activeXY[0] + (6 * unit) / k} x2={activeXY[0] + (9 * unit) / k} y1={activeXY[1]} y2={activeXY[1]} />
                 <line x1={activeXY[0]} x2={activeXY[0]} y1={activeXY[1] - (9 * unit) / k} y2={activeXY[1] - (6 * unit) / k} />
@@ -276,7 +278,7 @@ export default function MiniMap({ places, activePlaceId, routeOrder, visited }: 
         </g>
       </svg>
 
-      <div className="absolute top-2 right-2 flex flex-col gap-1">
+      <div className="absolute top-4 right-4 flex flex-col gap-2">
         {/* 窗口本身变大/变小：sm 侧栏 → md 半屏浮层 → lg 铺满 */}
         <button
           type="button"
@@ -298,7 +300,6 @@ export default function MiniMap({ places, activePlaceId, routeOrder, visited }: 
         >
           ⤡
         </button>
-        <span aria-hidden className="my-0.5 h-px bg-rule" />
         <button type="button" aria-label="放大地图内容" title="放大内容" className={zoomBtn} onClick={() => zoomAt(1.6)}>
           ＋
         </button>
@@ -318,23 +319,35 @@ export default function MiniMap({ places, activePlaceId, routeOrder, visited }: 
           </button>
         )}
       </div>
+      </div>
 
-      <figcaption className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-ink-muted">
-        <span className="flex items-center gap-1">
-          <span className="inline-block size-2 rounded-full bg-accent" aria-hidden />
-          当前
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="inline-block size-2 rounded-full bg-accent-2" aria-hidden />
-          已到达 <span className="data-num">{visited.length}/{places.length}</span>
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="inline-block size-2 rounded-full bg-axis" aria-hidden />
-          未到达
-        </span>
-        <span className="lab-label w-full">
-          {size === "sm" ? "⤢ 放大窗口" : "ESC 收回窗口"} · ZOOM ×{k.toFixed(1)} · 滚轮/双击缩放 · 拖拽平移
-        </span>
+      <figcaption>
+        {/* 图例行 */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-rule px-4 py-2 text-[12px] text-ink-muted">
+          <span className="flex items-center gap-2">
+            <span className="inline-block size-2 rounded-full bg-accent" aria-hidden />
+            当前
+          </span>
+          <span className="flex items-center gap-2">
+            <span
+              className="inline-block size-2 rounded-full border-[1.5px] border-accent"
+              aria-hidden
+            />
+            已到达 <span className="data-num">{visited.length}/{places.length}</span>
+          </span>
+          <span className="flex items-center gap-2">
+            <span
+              className="inline-block size-2 rounded-full border-[1.5px] border-axis"
+              aria-hidden
+            />
+            未到达
+          </span>
+        </div>
+        {/* 操作提示：视觉上明确降级，11px 单行不换行 */}
+        <div className="flex items-center justify-between gap-2 border-t border-rule px-4 py-2 text-[11px] whitespace-nowrap text-ink-muted/70">
+          <span>滚轮缩放 · 拖拽平移</span>
+          <span className="data-num">×{k.toFixed(1)}</span>
+        </div>
       </figcaption>
       <p className="sr-only" aria-live="polite">
         {active ? `当前地点：${active.name}` : ""}
@@ -342,12 +355,30 @@ export default function MiniMap({ places, activePlaceId, routeOrder, visited }: 
     </figure>
   );
 
-  if (size === "sm") return panel;
+  if (size === "sm") {
+    return (
+      <>
+        {/* lg 以上：常驻侧栏的 280px 卡片 */}
+        <div className="hidden lg:block">{panel}</div>
+        {/* 1024px 以下：收起为右下角悬浮圆按钮，点开就是浮层地图（design-spec.md 八） */}
+        <button
+          type="button"
+          aria-label="打开世界地图"
+          title="世界地图"
+          onClick={() => setSize("md")}
+          className="fixed right-6 bottom-6 z-40 flex size-12 items-center justify-center rounded-full border border-rule bg-surface shadow-[var(--shadow-card)] transition-colors duration-200 hover:border-accent lg:hidden"
+        >
+          <span aria-hidden className="block size-2 rounded-full bg-accent" />
+        </button>
+      </>
+    );
+  }
 
-  // 放大后脱离侧栏，浮在长卷之上：点背景或按 Esc 收回
+  // 放大后脱离侧栏，浮在长卷之上：点背景或按 Esc 收回。
+  // 规范禁止 backdrop-filter，所以遮罩用高不透明度的纸色而不是毛玻璃。
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-plane/80 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-plane/95 p-8"
       onClick={() => setSize("sm")}
     >
       <div

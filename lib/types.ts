@@ -63,9 +63,28 @@ export type Series = {
   source: { page: number };
 };
 
+/** 左侧导轨上的一章。id 为空表示这一章在本长卷里没有摘录事件，只画刻度不可点。 */
+export type ChapterNode = {
+  n: number;
+  id: string | null;
+  year: string;
+  title: string;
+};
+
 /** 事件的显示年份：书里含糊时用 yearLabel。 */
 export function yearText(e: Event): string {
   return e.yearLabel ?? String(e.year);
+}
+
+/**
+ * 年份标签拆成「数字部分 / 中文尾巴」，例如 "1450 年前后" → ["1450", "年前后"]。
+ * 数字要等宽 + 字距，中文尾巴必须字距归零，所以只能分开渲染。
+ * 整条都没有数字（如"年代不详（也门传说）"）时数字位留空，全部当中文处理。
+ */
+export function splitYear(label: string): [string, string] {
+  const m = /^([\d\s–-]+)(.*)$/.exec(label);
+  if (!m) return ["", label];
+  return [m[1].trim(), m[2].trim()];
 }
 
 /** 小地图：坐标已在 tools/build-map.mjs 里投影好，客户端不需要 d3-geo。 */

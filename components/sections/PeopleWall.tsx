@@ -5,22 +5,28 @@ export default function PeopleWall({ people, volumeTitle }: { people: Person[]; 
   if (!people.length) return null;
   return (
     <section className="reveal border-t border-rule py-12">
-      <h3 className="lab-label">PEOPLE · 这一卷里的人 · {volumeTitle}</h3>
-      <ul className="mt-5 grid gap-3 sm:grid-cols-2">
+      <h3 className="lab-label">
+        <span className="en">PEOPLE</span> · <span className="zh">这一卷里的人 · {volumeTitle}</span>
+      </h3>
+      {/* 三列铺满内容区，gap 24px */}
+      <ul className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {people.map((p) => (
-          <li key={p.id} className="rounded-xl border border-rule bg-surface p-4 shadow-[0_1px_2px_var(--ring)] transition-shadow hover:shadow-[0_10px_28px_-16px_var(--ring-strong)]">
+          <li
+            key={p.id}
+            className="regmarks relative border border-rule bg-surface p-8 shadow-[var(--shadow-card)] transition-[border-color,box-shadow] duration-200 ease-out hover:border-accent hover:shadow-[var(--shadow-card-hover)]"
+          >
             <div className="flex flex-wrap items-baseline gap-x-2">
-              <span className="font-medium text-ink">{p.name}</span>
+              <span className="font-display text-[19px] font-semibold text-ink">{p.name}</span>
               {p.originalName && (
-                <span className="text-[11px] text-ink-muted">{p.originalName}</span>
+                <span className="text-[12px] text-ink-muted">{p.originalName}</span>
               )}
             </div>
-            <div className="mt-0.5 flex flex-wrap items-baseline gap-x-2 text-[11px] text-ink-muted">
+            <div className="mt-1 flex flex-wrap items-baseline gap-x-2 text-[12px] text-ink-muted">
               <span>{p.role}</span>
               {p.life && <span>· {p.life}</span>}
               <span className="data-num">· P.{p.source.page}</span>
             </div>
-            <p className="mt-2 text-sm leading-relaxed text-ink-2">{p.blurb}</p>
+            <p className="mt-2 text-[15px] leading-[1.85] text-ink">{p.blurb}</p>
           </li>
         ))}
       </ul>

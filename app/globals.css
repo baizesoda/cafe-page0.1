@@ -1,44 +1,27 @@
 @import "tailwindcss";
 
-/* 咖啡实验室风：暖纸面 + 烘焙棕 + 焦糖橙，配蓝图网格与等宽数字。
-   accent = “当前”标记（琥珀棕），accent-2 = 路线与引文（焦糖橙）。 */
+/* 复古精密档案风（Vintage Precision Archive）—— 见项目根目录 design-spec.md。
+   温度七成来自暖纸底与宋体标题，精密三成来自工程网格、1px 细线与等宽墨蓝数字。
+   规范里的九个颜色就是下面这些，不新增；红褐管"状态"，墨蓝管"数据"，两者不混用。
+   规范禁止深色背景，所以这里不再提供 prefers-color-scheme: dark 主题。 */
 :root {
   color-scheme: light;
-  --plane: #f6f1e7;
-  --surface: #fffdf7;
-  --ink: #251b12;
-  --ink-2: #5d5044;
-  --ink-muted: #9a8b77;
-  --rule: #e4d9c6;
-  --axis: #c7b9a2;
-  --accent: #9c6b23;
-  --accent-2: #c05f2a;
-  --ring: rgba(37, 27, 18, 0.08);
-  --ring-strong: rgba(37, 27, 18, 0.22);
-  --land: #eae2d1;
-  /* 蓝图网格与顶部暖光：数值单列出来，明暗两套各自调强弱 */
-  --grid: rgba(37, 27, 18, 0.045);
-  --glow: rgba(192, 95, 42, 0.1);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --plane: #16110c;
-    --surface: #201a13;
-    --ink: #f2e9db;
-    --ink-2: #c9bba6;
-    --ink-muted: #8f8071;
-    --rule: #372d21;
-    --axis: #4c4132;
-    --accent: #e0a75a;
-    --accent-2: #d97742;
-    --ring: rgba(0, 0, 0, 0.4);
-    --ring-strong: rgba(0, 0, 0, 0.6);
-    --land: #2b241b;
-    --grid: rgba(242, 233, 219, 0.05);
-    --glow: rgba(224, 167, 90, 0.12);
-  }
+  --plane: #f6f1e7; /* 页面纸底 */
+  --surface: #fcfaf4; /* 卡片表面，必须略亮于纸底 */
+  --ink: #2e2822; /* 正文深褐，代替纯黑 */
+  --ink-2: #574e44; /* 正文次级，仍深于规范下限 */
+  --ink-muted: #6b6055; /* 次级文字下限，不得更浅 */
+  --rule: #e6dccb; /* 描边 */
+  --accent: #a94e24; /* 强调红褐：当前状态、已读节点、引用竖线 */
+  --accent-2: #a94e24; /* 同一支红褐，保留别名给引文与地图路线 */
+  --data: #2f4858; /* 数据墨蓝：仅用于数字、年份、页码、刻度 */
+  --gold: #8b6f3f; /* 章节金褐 */
+  --axis: rgba(47, 72, 88, 0.4); /* 未读刻度/空心描边，取墨蓝 40% */
+  --land: #e6dccb;
+  --grid-line: rgba(230, 220, 203, 0.4);
+  --grid-major: rgba(230, 220, 203, 0.6);
+  --shadow-card: 0 2px 12px rgba(46, 40, 34, 0.05);
+  --shadow-card-hover: 0 2px 12px rgba(46, 40, 34, 0.08);
 }
 
 @theme inline {
@@ -51,26 +34,30 @@
   --color-axis: var(--axis);
   --color-accent: var(--accent);
   --color-accent-2: var(--accent-2);
+  --color-data: var(--data);
+  --color-gold: var(--gold);
   --color-land: var(--land);
   --font-sans: system-ui, -apple-system, "PingFang SC", "Hiragino Sans GB",
     "Microsoft YaHei", "Segoe UI", sans-serif;
-  /* 标题用宋体/明朝体系：长卷的“书卷气”主要靠它 */
-  --font-display: "Songti SC", "STSong", "Noto Serif SC",
-    "Source Han Serif SC", "SimSun", serif;
-  /* 数字与刻度用等宽：仪器读数的观感全靠它 */
-  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Roboto Mono",
+  /* 中文衬线：旧书气质的地基，标题一律用它 */
+  --font-display: "Source Han Serif SC", "Noto Serif SC", "Songti SC", "STSong",
+    "SimSun", serif;
+  /* 等宽：所有数字、年份、页码、编号 */
+  --font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace, "SF Mono",
     Menlo, Consolas, monospace;
 }
 
 body {
-  background: var(--plane);
+  background-color: var(--plane);
   color: var(--ink);
   font-family: var(--font-sans);
+  /* 铁律：中文一律不加字距 */
+  letter-spacing: 0;
   text-rendering: optimizeLegibility;
 }
 
-/* 底层：8mm 蓝图网格 + 左上角一团烘焙暖光。
-   fixed + pointer-events:none，滚动时不动、也不挡点击。 */
+/* 双层工程网格：40px 细线打底，每 200px 一条略深主刻度。
+   fixed + pointer-events:none，滚动时不动、也不挡点击。规范禁止发光，所以没有暖光晕。 */
 body::before {
   content: "";
   position: fixed;
@@ -78,109 +65,119 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background-image:
-    radial-gradient(70rem 40rem at 12% -10%, var(--glow), transparent 70%),
-    linear-gradient(to right, var(--grid) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
-  background-size: 100% 100%, 32px 32px, 32px 32px;
+    linear-gradient(to right, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 200px 200px, 200px 200px, 40px 40px, 40px 40px;
 }
 
 ::selection {
-  background: color-mix(in srgb, var(--accent) 28%, transparent);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
-/* 仪器标签：等宽小字 + 大字距，前面缀一小段横杠 */
+/* 档案区块小标：等宽小字。字距只给英文大写和数字，所以这里默认 0，
+   Latin 部分单独套 .en 才加字距——否则「年代跨度」这种纯中文标签会被拉开。 */
 .lab-label {
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0;
   color: var(--ink-muted);
 }
 
-/* 读数：等宽 + 等宽数字位，滚动时数字跳动不会左右晃 */
+/* 英文大写/编号：0.12em 字距（design-spec.md 铁律 2） */
+.en {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* 读数：等宽 + 等宽数字位 + 墨蓝。这条不放在 @layer 里，
+   因此优先级高于 Tailwind 的 text-* 工具类，全站数字的颜色由它统一兜住。 */
 .data-num {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
+  letter-spacing: 0.08em;
+  color: var(--data);
 }
 
-/* 烘焙色带：生豆青 → 肉桂 → 深焙，Hero 里当“进度光谱”用 */
-.roast-strip {
-  background: linear-gradient(
-    to right,
-    #8a9a5b 0%,
-    #c9a227 22%,
-    #c05f2a 48%,
-    #8b4a1f 72%,
-    #3b2416 100%
-  );
+/* 中文一律不加字距（design-spec.md 铁律 1）。lab-label / data-num 里混排的中文
+   要单独套上这个类把字距归零，否则「题 外 话」那种拉开字距的毛病又回来了。 */
+.zh {
+  letter-spacing: 0;
+  text-transform: none;
 }
 
-/* 当前卡片的四角标记（像取景框/传感器读数框） */
-.brackets::before,
-.brackets::after {
+/* 章节罗马数字下方的短横线，给章节开头一个"落锤感" */
+.chapter-rule {
+  display: block;
+  width: 40px;
+  height: 2px;
+  background: var(--gold);
+}
+
+/* 卡片四角的准星标记：1px、长 6px，内缩 10px，颜色同描边。
+   几乎不占视觉重量，但能把"网页卡片"变成"图纸上的标注框"。
+   四个角用两层伪元素 + 两组渐变画完，不额外加 DOM。 */
+.regmarks::before,
+.regmarks::after {
   content: "";
   position: absolute;
-  width: 10px;
-  height: 10px;
-  border-color: var(--accent);
-  border-style: solid;
-  opacity: 0;
-  transition: opacity 0.3s;
+  pointer-events: none;
+  inset: 10px;
+  background-repeat: no-repeat;
 }
-.brackets::before {
-  top: -1px;
-  left: -1px;
-  border-width: 1px 0 0 1px;
-  border-top-left-radius: 4px;
+/* 上排两个角：横臂 + 竖臂 */
+.regmarks::before {
+  background-image:
+    linear-gradient(var(--rule), var(--rule)), linear-gradient(var(--rule), var(--rule)),
+    linear-gradient(var(--rule), var(--rule)), linear-gradient(var(--rule), var(--rule));
+  background-size: 6px 1px, 1px 6px, 6px 1px, 1px 6px;
+  background-position: top left, top left, top right, top right;
 }
-.brackets::after {
-  right: -1px;
-  bottom: -1px;
-  border-width: 0 1px 1px 0;
-  border-bottom-right-radius: 4px;
+/* 下排两个角 */
+.regmarks::after {
+  background-image:
+    linear-gradient(var(--rule), var(--rule)), linear-gradient(var(--rule), var(--rule)),
+    linear-gradient(var(--rule), var(--rule)), linear-gradient(var(--rule), var(--rule));
+  background-size: 6px 1px, 1px 6px, 6px 1px, 1px 6px;
+  background-position: bottom left, bottom left, bottom right, bottom right;
 }
-.brackets[data-on="true"]::before,
-.brackets[data-on="true"]::after {
-  opacity: 1;
+/* 当前卡片：准星换成红褐，是"读到这儿"的状态标记 */
+.regmarks[data-on="true"]::before,
+.regmarks[data-on="true"]::after {
+  background-image:
+    linear-gradient(var(--accent), var(--accent)), linear-gradient(var(--accent), var(--accent)),
+    linear-gradient(var(--accent), var(--accent)), linear-gradient(var(--accent), var(--accent));
 }
 
-/* 长卷的进入动画：默认淡入 + 轻微上移；reduced-motion 下只留淡入 */
+/* 进入动画只留淡入。规范禁止位移、缩放与回弹，过渡不超过 300ms */
 .reveal {
   opacity: 0;
-  transform: translateY(18px);
-  transition:
-    opacity 0.65s cubic-bezier(0.22, 0.61, 0.36, 1),
-    transform 0.65s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition: opacity 0.3s ease-out;
 }
 .reveal[data-shown="true"] {
   opacity: 1;
-  transform: none;
 }
 
-/* 小地图上的路线：走过的段落淡入，未到的保持透明 */
+/* 地图路线：走过的段落淡入，未到的保持透明 */
 .route-draw {
-  transition: opacity 0.45s ease-out;
+  transition: opacity 0.3s ease-out;
 }
 
-/* 时间轴上的圆点，当前事件的那颗放大并换成强调色 */
+/* 时间轴节点：只换颜色，不放大不发光 */
 .spine-dot {
-  transition: background-color 0.3s, box-shadow 0.3s, transform 0.3s;
-}
-.spine-dot[data-on="true"] {
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+  transition: background-color 0.2s ease-out, border-color 0.2s ease-out;
 }
 
-/* 地图当前点的呼吸圈：慢、弱，只是提示“在这儿”。
-   用 transform 而不是动画 r：窗口放大后基准半径会变，缩放式动画才跟着自适应。 */
-@keyframes ping-soft {
-  0% { transform: scale(1); opacity: 0.5; }
-  70%, 100% { transform: scale(2.6); opacity: 0; }
+/* 左侧导轨的节点悬停：浮出「年份 + 事件名」标签，纸色底 + 1px 描边 */
+.rail-node .rail-tip {
+  opacity: 0;
+  transition: opacity 0.15s ease-out;
 }
-.pulse-ring {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: ping-soft 2.6s ease-out infinite;
+.rail-node:hover .rail-tip,
+.rail-node:focus-visible .rail-tip {
+  opacity: 1;
 }
 
 /* 小地图缩放：滚轮/双击缩放、拖拽平移；拖拽时去掉过渡，指哪打哪 */
@@ -192,27 +189,19 @@ body::before {
   cursor: grabbing;
 }
 .map-canvas {
-  transition: transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+  transition: transform 0.3s ease-out;
 }
 .map-viewport[data-dragging="true"] .map-canvas {
   transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reveal {
-    transform: none;
-    transition: opacity 0.2s linear;
-  }
+  .reveal,
   .route-draw,
-  .spine-dot {
+  .spine-dot,
+  .map-canvas,
+  .rail-node .rail-tip {
     transition: none !important;
-  }
-  .map-canvas {
-    transition: none !important;
-  }
-  .pulse-ring {
-    animation: none !important;
-    opacity: 0 !important;
   }
   * {
     scroll-behavior: auto !important;
@@ -222,3 +211,4 @@ body::before {
 html {
   scroll-behavior: smooth;
 }
+

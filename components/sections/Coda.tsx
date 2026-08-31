@@ -1,11 +1,11 @@
 /** 收尾：结语 + 书目 + 用途声明。 */
 export default function Coda() {
   return (
-    <footer className="mx-auto max-w-6xl border-t border-rule px-4 py-20 xl:max-w-[84rem]">
-      <p className="lab-label">CODA</p>
-      <h2 className="mt-3 font-display text-3xl font-medium tracking-wide text-ink">读完之后</h2>
+    <footer className="mx-auto max-w-[1200px] border-t border-rule px-6 py-24 md:pl-16">
+      <p className="lab-label en">CODA</p>
+      <h2 className="mt-4 font-display text-4xl font-medium text-ink">读完之后</h2>
       {/* 中文正文写成字符串拼接：JSX 的换行会变成一个空格 */}
-      <div className="mt-5 max-w-2xl space-y-4 leading-relaxed text-ink-2">
+      <div className="mt-6 max-w-2xl space-y-4 text-[15px] leading-[1.85] text-ink">
         <p>
           {"雅各布写的其实不是一部饮品史。咖啡在这本书里始终是别的东西的载体：" +
             "先是宗教对清醒的争夺，然后是医生对身体的判决，接着是国王对税收的算计，" +

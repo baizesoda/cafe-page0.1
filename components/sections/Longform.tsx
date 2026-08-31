@@ -6,9 +6,10 @@ import peopleJson from "@/content/people.json";
 import placesJson from "@/content/places.json";
 import volumesJson from "@/content/volumes.json";
 import seriesJson from "@/content/series.json";
-import { yearText, type Event, type Person, type Place, type Series, type Volume } from "@/lib/types";
+import { yearText, type ChapterNode, type Event, type Person, type Place, type Series, type Volume } from "@/lib/types";
 import { useActiveId, useEventKeys, useReveal } from "@/lib/useActiveEvent";
 import MiniMap from "@/components/viz/MiniMap";
+import TimelineRail from "./TimelineRail";
 import VolumeRail from "./VolumeRail";
 import VolumeIntro from "./VolumeIntro";
 import EventCard from "./EventCard";
@@ -35,6 +36,19 @@ for (const e of events) {
 
 const counts: Record<number, number> = {};
 for (const v of volumes) counts[v.n] = spine.filter((e) => e.volume === v.n).length;
+
+/** 左侧导轨的 25 个节点 = 全书 25 章。第 18、25 章在本长卷里没有摘录，只画刻度不可点。 */
+const TOTAL_CHAPTERS = 25;
+const chapterNodes: ChapterNode[] = Array.from({ length: TOTAL_CHAPTERS }, (_, i) => {
+  const n = i + 1;
+  const first = spine.find((e) => e.chapter === n);
+  return {
+    n,
+    id: first?.id ?? null,
+    year: first ? yearText(first) : "",
+    title: first?.title ?? "",
+  };
+});
 
 /** 人物按 source.page 落在哪一卷的 pageRange 里分组 */
 const peopleByVolume = new Map<number, Person[]>();
@@ -67,6 +81,10 @@ export default function Longform() {
   const activeVolume = events[activeIndex]?.volume ?? 1;
   const progress = read.filter((e) => !e.aside).length;
 
+  // 左侧导轨：当前章跟着时间轴事件走，已读章 = 出现过的章号
+  const activeChapter = railEvent?.chapter ?? 1;
+  const readChapters = new Set(read.filter((e) => !e.aside).map((e) => e.chapter));
+
   return (
     <>
       <VolumeRail
@@ -77,29 +95,24 @@ export default function Longform() {
         yearLabel={yearText(railEvent)}
       />
 
-      {/* 84rem：xl 以上要同时放下交错的两列卡片和 300px 的地图列，
-          6xl（72rem）会把卡片挤到 340px 左右，中文一行只剩二十个字。
+      <TimelineRail nodes={chapterNodes} activeChapter={activeChapter} read={readChapters} />
+
+      {/* 内容区最大 1200px 居中（design-spec.md 四）；md 以上左侧留 64px 给时间轴导轨。
+          地图列固定 280px，gap 32px，都是 8 的倍数。
           Hero / Coda / VolumeRail 用同一组宽度，左边距才不会一节一跳。 */}
-      <div className="mx-auto max-w-6xl px-4 lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-12 xl:max-w-[84rem]">
+      <div className="mx-auto max-w-[1200px] px-6 md:pl-16 lg:grid lg:grid-cols-[minmax(0,1fr)_280px] lg:gap-8">
         {/* 地图既是 sticky 元素本身，也是 grid item：中间再套一层 div 的话，
             窄屏上那层 div 只有地图那么高，sticky 立刻就滚出去了。
             桌面端要配 lg:self-start——grid item 默认 stretch 会把自己撑满整行，
-            撑满了就没得"粘"了。 */}
-        <div
-          className={[
-            "sticky top-[2.6rem] z-20 -mx-4 border-b border-rule bg-plane/90 px-4 py-2 backdrop-blur",
-            "lg:col-start-2 lg:row-start-1 lg:top-20 lg:mx-0 lg:self-start lg:border-0",
-            "lg:bg-transparent lg:px-0 lg:backdrop-blur-none",
-          ].join(" ")}
-        >
-          <div className="mx-auto max-w-[240px] lg:max-w-none">
-            <MiniMap
-              places={places}
-              activePlaceId={activePlaceId}
-              routeOrder={routeOrder}
-              visited={visited}
-            />
-          </div>
+            撑满了就没得"粘"了。
+            1024px 以下 MiniMap 自己收成右下角悬浮按钮，这一列不占位置。 */}
+        <div className="lg:col-start-2 lg:row-start-1 lg:sticky lg:top-24 lg:self-start">
+          <MiniMap
+            places={places}
+            activePlaceId={activePlaceId}
+            routeOrder={routeOrder}
+            visited={visited}
+          />
         </div>
 
         <main className="lg:col-start-1 lg:row-start-1">
@@ -115,15 +128,14 @@ export default function Longform() {
                 <ol className="relative">
                   <span
                     aria-hidden
-                    className="absolute top-3 bottom-3 left-[13px] w-px bg-rule sm:left-[17px] xl:left-1/2"
+                    className="absolute top-4 bottom-4 left-[13px] w-px bg-rule sm:left-[17px]"
                   />
-                  {vSpine.map((e, i) => (
+                  {vSpine.map((e) => (
                     <EventCard
                       key={e.id}
                       event={e}
                       place={e.placeId ? placeById.get(e.placeId) : undefined}
                       active={e.id === activeId}
-                      side={i % 2 === 0 ? "left" : "right"}
                     />
                   ))}
                 </ol>

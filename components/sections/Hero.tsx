@@ -1,3 +1,5 @@
+import Plate from "@/components/Plate";
+
 type Props = {
   spanFrom: string;
   spanTo: string;
@@ -25,6 +27,17 @@ export default function Hero({ spanFrom, spanTo, counts }: Props) {
           "最后成了可以在交易所里买空卖空、并且值得烧掉的东西。"}
       </p>
 
+      {/* 卷首图版：与正文同宽（max-w-2xl），不做全出血 */}
+      <div className="mt-10 max-w-2xl">
+        <Plate
+          file="plates/plate-00-branch.jpg"
+          numeral="0"
+          caption="咖啡枝上的红果，与生豆、焙豆"
+          alt="一枝挂着深红咖啡果的枝条摊在米色纸上，旁边分放着青绿生豆和深褐焙豆。"
+          priority
+        />
+      </div>
+
       <dl className="mt-8 flex flex-wrap gap-x-8 gap-y-4 text-sm text-ink-2">
         <div>
           <dt className="lab-label">年代跨度</dt>
@@ -51,10 +64,9 @@ export default function Hero({ spanFrom, spanTo, counts }: Props) {
       </dl>
 
       <p className="mt-8 max-w-2xl text-sm leading-[1.85] text-ink-muted">
-        每条事件都标了原书章节和页码（<span className="data-num">P.xx</span>）
-        {"，可以直接翻回去核对。第一、二卷逐章精读，第三至五卷只留里程碑。键盘 "}
-        <kbd className="data-num border border-rule px-1">j</kbd> /{" "}
-        <kbd className="data-num border border-rule px-1">k</kbd> 在事件之间跳转。
+        {"每条事件都标了原书章节，可以直接翻回去核对。五卷都是逐章精读。键盘 "}
+        <kbd className="data-num border border-rule px-1">←</kbd> /{" "}
+        <kbd className="data-num border border-rule px-1">→</kbd> 在事件之间跳转。
       </p>
 
       {/* 全书跨度尺：规范禁渐变，所以用 1px 刻度线画一把尺，而不是色带 */}

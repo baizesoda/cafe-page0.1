@@ -53,7 +53,7 @@ export function useReveal() {
 }
 
 /**
- * j / k 在时间轴事件之间跳转（不劫持方向键，避免破坏正常滚动）。
+ * ← / → 在时间轴事件之间跳转（不用上下键，免得抢掉正常滚动）。
  *
  * `ids` 是文档顺序的全部可观察元素，`stops` 只有时间轴事件：旁注是卷首并排的两张卡，
  * 同一行上有两个落点，按下去页面不动，连按就卡在那儿出不来，所以旁注不当落点。
@@ -67,11 +67,13 @@ export function useEventKeys(ids: string[], activeId: string | null, stops: stri
       if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
       const target = ev.target as HTMLElement | null;
       if (target && /^(INPUT|TEXTAREA|SELECT)$/.test(target.tagName)) return;
-      if (ev.key !== "j" && ev.key !== "k") return;
+      // 用左右箭头而不是上下：上下箭头本来就是滚动页面的键，
+      // 抢过来会让读者失去逐行滚动的能力。
+      if (ev.key !== "ArrowRight" && ev.key !== "ArrowLeft") return;
 
       const i = activeId ? (order.get(activeId) ?? -1) : -1;
       const next =
-        ev.key === "j"
+        ev.key === "ArrowRight"
           ? stopIdx.find((n) => n > i)
           : [...stopIdx].reverse().find((n) => n < i);
       const el = next === undefined ? null : document.getElementById(ids[next]);

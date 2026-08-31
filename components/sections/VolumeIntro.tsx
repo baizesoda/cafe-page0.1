@@ -1,3 +1,4 @@
+import Plate from "@/components/Plate";
 import { splitYear, yearText, type Event, type Volume } from "@/lib/types";
 
 type Props = {
@@ -10,8 +11,38 @@ type Props = {
 
 const ROMAN = ["", "I", "II", "III", "IV", "V"];
 
+/** 每卷卷首图版（design-spec.md 5.6）。按卷号取，缺图就不渲染。 */
+const PLATES: Record<number, { file: string; caption: string; alt: string }> = {
+  1: {
+    file: "plates/plate-01-yemen.jpg",
+    caption: "也门山地的咖啡梯田",
+    alt: "也门干旱山坡上层层石砌梯田，种着矮咖啡树，几只山羊在坡上，远处是赭石色群山。",
+  },
+  2: {
+    file: "plates/plate-02-coffeehouse.jpg",
+    caption: "十七世纪咖啡馆的内堂",
+    alt: "光线昏暗的十七世纪咖啡馆内堂，长木桌上有一支蜡烛、一只铜壶和几只小杯，墙上贴着告示。",
+  },
+  3: {
+    file: "plates/plate-03-voyage.jpg",
+    caption: "甲板上被绑住的咖啡树苗",
+    alt: "帆船甲板上一只玻璃罩里养着一株咖啡树苗，罩子用绳索绑在栏杆上，背景是海面。",
+  },
+  4: {
+    file: "plates/plate-04-exchange.jpg",
+    caption: "十九世纪交易所的行情板",
+    alt: "十九世纪交易所一角，黑板上用粉笔写着行情，桌上有黄铜电报键和几本厚账簿。",
+  },
+  5: {
+    file: "plates/plate-05-santos.jpg",
+    caption: "1931 年，桑托斯港焚烧咖啡",
+    alt: "露天场地上成堆的咖啡麻袋正在燃烧，浓烟升起，几个工人站在远处看。",
+  },
+};
+
 /** 卷与卷之间的全屏过场，顺带放本卷的旁注。 */
 export default function VolumeIntro({ volume: v, count, asides }: Props) {
+  const plate = PLATES[v.n];
   return (
     <section
       id={`volume-${v.n}`}
@@ -31,13 +62,23 @@ export default function VolumeIntro({ volume: v, count, asides }: Props) {
         <h2 className="mt-6 font-display text-5xl font-medium text-ink">{v.title}</h2>
         <p className="mt-4 max-w-2xl text-xl leading-[1.9] text-ink">{v.oneLiner}</p>
         <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-[13px] text-ink-muted">
-          <span className="data-num">P.{v.pageRange[0]}–{v.pageRange[1]}</span>
           <span>
             <span className="data-num">{count}</span> 条事件
             {v.depth === "full" ? "（精读）" : "（里程碑骨架）"}
           </span>
         </div>
       </div>
+
+      {plate && (
+        <div className="reveal mt-10 max-w-2xl">
+          <Plate
+            file={plate.file}
+            numeral={ROMAN[v.n]}
+            caption={plate.caption}
+            alt={plate.alt}
+          />
+        </div>
+      )}
 
       {asides.length > 0 && (
         <div className="reveal mt-8">
@@ -59,7 +100,7 @@ export default function VolumeIntro({ volume: v, count, asides }: Props) {
                       <span className="zh ml-1">{splitYear(yearText(a))[1]}</span>
                     )}
                   </span>
-                  <span className="lab-label en">CH.{a.chapter} · P.{a.source.page}</span>
+                  <span className="lab-label en">CH.{a.chapter}</span>
                 </header>
                 <h4 className="mt-2 font-display text-[19px] leading-snug font-semibold text-ink">
                   {a.title}

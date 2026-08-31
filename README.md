@@ -23,6 +23,24 @@ npm run build      # 产物在 out/，纯静态，约 30 个文件 1.2MB
 `next.config.ts` 里开了 `output: "export"`，所以服务器上只要一个能发静态文件的
 Web Server，不需要常驻 Node 进程。
 
+## 部署到 GitHub Pages
+
+`.github/workflows/deploy.yml` 在 push 到 `main` 时自动构建并发布。仓库里只需要做
+一次设置：**Settings → Pages → Build and deployment → Source 选 `GitHub Actions`**。
+
+站点地址：`https://<用户名>.github.io/<仓库名>/`
+
+两个容易踩的点：
+
+- 项目站点挂在 `/<仓库名>/` 子路径下，所以 `next.config.ts` 用 `NEXT_PUBLIC_BASE_PATH`
+  设 `basePath` / `assetPrefix`，workflow 里按仓库名注入。少了它 `_next` 和图片全 404。
+- `next/image` 开了 `unoptimized` 之后**不会**自动补 `basePath`，所以 `components/Plate.tsx`
+  里自己拼了前缀。新增任何用绝对路径引静态资源的地方都要照做。
+
+**注意：GitHub Pages 没有访问控制。** 公开仓库的 Pages 站点是全网可读的，也会被搜索
+引擎抓到，服务器方案里的 Basic Auth 在这里不存在。只想给特定几个人看的话，用下面的
+Nginx 方案，或者把仓库转成私有（私有仓库的 Pages 需要付费套餐）。
+
 ## 部署到一台 Linux 服务器（Nginx）
 
 **先在云控制台开放端口**：安全组入方向加一条 TCP `80`、授权对象 `0.0.0.0/0`。

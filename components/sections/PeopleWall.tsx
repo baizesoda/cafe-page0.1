@@ -24,7 +24,6 @@ export default function PeopleWall({ people, volumeTitle }: { people: Person[]; 
             <div className="mt-1 flex flex-wrap items-baseline gap-x-2 text-[12px] text-ink-muted">
               <span>{p.role}</span>
               {p.life && <span>· {p.life}</span>}
-              <span className="data-num">· P.{p.source.page}</span>
             </div>
             <p className="mt-2 text-[15px] leading-[1.85] text-ink">{p.blurb}</p>
           </li>

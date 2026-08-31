@@ -27,13 +27,6 @@ export default function Coda() {
           </dd>
         </div>
         <div className="flex gap-3">
-          <dt className="w-16 shrink-0 text-ink-muted">页码</dt>
-          <dd>
-            所有 <span className="data-num">P.xx</span>
-            {" 均为该电子版的 PDF 页序（共 310 页），与纸书页码可能有偏移。"}
-          </dd>
-        </div>
-        <div className="flex gap-3">
           <dt className="w-16 shrink-0 text-ink-muted">摘要</dt>
           <dd>
             {"事件摘要是我自己的转述；引文为短引，只用来定位原文。" +
@@ -45,6 +38,13 @@ export default function Coda() {
           <dd>
             {"只录书中明确写出的数字。推算值（由“翻了十倍”这类表述折算）" +
               "在图上画成空心点并注明。"}
+          </dd>
+        </div>
+        <div className="flex gap-3">
+          <dt className="w-16 shrink-0 text-ink-muted">图版</dt>
+          <dd>
+            {"全部图版（PLATE / FIG.）由 AI 生成，是按书里文字做的场景复原，" +
+              "不是史料照片或文物影像，服饰、器物、场地细节都不可作为考据依据。"}
           </dd>
         </div>
       </dl>

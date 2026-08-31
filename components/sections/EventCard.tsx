@@ -1,3 +1,5 @@
+import Plate from "@/components/Plate";
+import { scenePlate } from "@/lib/scenePlates";
 import { splitYear, yearText, type Event, type Place } from "@/lib/types";
 
 type Props = {
@@ -11,6 +13,7 @@ export default function EventCard({ event: e, place, active }: Props) {
   const label = yearText(e);
   const [num, suffix] = splitYear(label);
   const longLabel = label.length > 6;
+  const plate = scenePlate(e.id);
 
   return (
     <li
@@ -48,15 +51,26 @@ export default function EventCard({ event: e, place, active }: Props) {
             {num}
             {suffix && <span className="zh ml-1 text-base">{suffix}</span>}
           </span>
-          <span className="lab-label en">
-            CH.{e.chapter} · P.{e.source.page}
-          </span>
+          <span className="lab-label en">CH.{e.chapter}</span>
         </header>
 
         <h3 className="mt-2 font-display text-[19px] leading-snug font-semibold text-ink">
           {e.title}
         </h3>
         <p className="mt-2 text-[15px] leading-[1.85] text-ink">{e.summary}</p>
+
+        {/* 只有少数画面感强的事件挂了图版，见 lib/scenePlates.ts */}
+        {plate && (
+          <div className="mt-5">
+            <Plate
+              file={plate.file}
+              numeral={plate.numeral}
+              label="FIG."
+              caption={plate.caption}
+              alt={plate.alt}
+            />
+          </div>
+        )}
 
         {e.quote && (
           <blockquote className="mt-5 border-l-2 border-accent pl-4 text-sm leading-[1.85] text-ink-muted">

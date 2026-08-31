@@ -4,6 +4,7 @@ import placesJson from "@/content/places.json";
 import type { Event } from "@/lib/types";
 import Hero from "@/components/sections/Hero";
 import Longform from "@/components/sections/Longform";
+import PlateGallery from "@/components/sections/PlateGallery";
 import Coda from "@/components/sections/Coda";
 
 const events = eventsJson as unknown as Event[];
@@ -23,6 +24,7 @@ export default function Page() {
         }}
       />
       <Longform />
+      <PlateGallery />
       <Coda />
     </>
   );

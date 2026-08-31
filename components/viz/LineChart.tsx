@@ -112,7 +112,7 @@ export default function LineChart({ series: s }: { series: Series }) {
               由倍数推算
             </span>
           )}
-          <span className="data-num en">LOG SCALE · P.{s.source.page}</span>
+          <span className="data-num en">LOG SCALE</span>
         </div>
         {s.caveat && <p className="max-w-2xl leading-relaxed">{s.caveat}</p>}
       </figcaption>
